@@ -19,6 +19,9 @@ on:
     branches:
       - 'main'
 
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: jbclementdocker/opentofu-azcli
 
 jobs:
   push_to_registry:
@@ -43,7 +46,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ${{ env.REGISTRY || "docker.io" }}/${{ env.IMAGE_NAME || github.repository }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push Docker image
         id: push
